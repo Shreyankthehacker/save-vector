@@ -1,0 +1,6 @@
+1. Raw vectors (vectors.db)
+2. Graph structure (index.db)
+3. ID mapping (id_map.db)
+
+
+[0........1*dim-1][1*dim..............2*dim-1]............[(idx.count-1)*dim.................idx.count*dim-1]

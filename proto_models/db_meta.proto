@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package models ;
+option go_package = "proto_models/";
+
+
+message DataBase{
+    string dbname = 1;
+    string created_at = 2;
+    string updated_at = 3;
+    repeated string indexes = 4;
+}
