@@ -31,8 +31,8 @@ func CreateDatabase(name string)(*DataBase,error){
 info,err:= os.Stat(name)
 
 if err==nil && info.IsDir(){
-	utils.Logger.Fatalln("Such database already exist please create a new one")
-	return nil,nil
+	utils.Logger.Println("Such database already exist please create a new one")
+	return FetchDatabase(name)
 }
 
 
@@ -102,6 +102,8 @@ return nil
 
 
 func FetchDatabase(Name string)(*DataBase,error){
+
+	print("fetch is called")
 
 meta_file_path:=Name+"/"+DATABASE_METAINFO_FILE
 file,err:= os.ReadFile(meta_file_path)
