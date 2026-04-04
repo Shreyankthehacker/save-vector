@@ -41,7 +41,8 @@ if err!=nil{
 }
 defer file.Close()
 
-offset:= index.count*index.dim
+offset:= index.count*index.dim*4  // 4 bcz each number takes 4 bytes
+print("Writing after ",offset)
 n,err := file.WriteAt(buffered_vector,int64(offset))
 if err!=nil{
 	utils.Logger.Fatal("Could not write to the raw vector ");
@@ -87,7 +88,8 @@ if err!=nil{
 
 
 
-length_eid := byte(len(external_id))
+// length_eid := byte(len(external_id))
+length_eid := uint32(len(external_id))
 eid_byte  := []byte(external_id)
 binary.Write(final_buffer,binary.LittleEndian,length_eid)
 binary.Write(final_buffer,binary.LittleEndian,eid_byte)

@@ -3,4 +3,6 @@
 3. ID mapping (id_map.db)
 
 
-[length of metadata][metadata][0........1*dim-1][1*dim..............2*dim-1]............[(idx.count-1)*dim.................idx.count*dim-1]
+[0........1*dim-1][1*dim..............2*dim-1]............[(idx.count-1)*dim.................idx.count*dim-1]
+
+[length of metadata][metadata][length of eid1][eid1][len of eid2 ][eid2].....

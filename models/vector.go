@@ -28,18 +28,20 @@ func (idx *Index)FetchVectorByInternalId(id int) (*Vector,error){
 		return nil,err
 	}
 	defer file.Close()
-	buffer := make([]byte, 4)
+	// buffer := make([]byte, 4)
 
-	_, err = io.ReadFull(file, buffer)
-	if err != nil {
-		return nil, err
-	}
+	// _, err = io.ReadFull(file, buffer)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	//actually inside 
 	
-	offset:=int64(binary.LittleEndian.Uint32(buffer))
+	// offset:=int64(binary.LittleEndian.Uint32(buffer))
 	vsize:=int64(idx.dim*4)
-	offset+=int64(id*int(vsize))
+	offset:=int64(id*int(vsize))
 	vector_buffer:=make([]byte,vsize)
-	file.Seek(offset,io.SeekCurrent)
+	file.Seek(offset-4,io.SeekCurrent)
 	_, err = io.ReadFull(file, vector_buffer)
 	if err != nil {
 		return nil, err
@@ -61,9 +63,48 @@ func (idx *Index)FetchVectorByInternalId(id int) (*Vector,error){
 
 }
 
-func FetchInternalIdByExternalId(external_id string)(int , error){
-	return 0,nil
+func (idx *Index)FetchInternalIdByExternalId(external_id string)(int , error){
+
+	map_vector_file_path:=idx.path+"/"+config.INDEX_METADATA_FILE
+	file,err:= os.OpenFile(map_vector_file_path,os.O_RDONLY,0646)
+	if err!=nil{
+		fmt.Println("Some issue in opening raw vector file")
+		return -1,err
+	}
+	defer file.Close()
+	buffer := make([]byte, 4)
+
+	_, err = io.ReadFull(file, buffer)
+	if err != nil {
+		return -1, err
+	}
+
+	
+	offset:=int64(binary.LittleEndian.Uint32(buffer))
+	external_id_bytes := []byte(external_id)
+	file.Seek(offset,io.SeekCurrent)
+	// skipped the meta data for the index now iterating the external id map 
+
+	for ctr := range(idx.count){
+		file.Read(buffer)
+		length_to_skip:=int32(binary.LittleEndian.Uint32(buffer))
+		if(length_to_skip==int32((len(external_id_bytes)))){
+			temp_buffer:= make([]byte,length_to_skip)
+			file.Read(temp_buffer)
+			if(bytes.Equal(temp_buffer,external_id_bytes)){
+				return ctr,nil
+			}//else dont need to do anything coz we already moved ptr
+		}else {
+			file.Seek(int64(length_to_skip),io.SeekCurrent)
+		}
+	}
+
+
+	return -1,nil
 }
+
+
+
 
 func (idx *Index) FetchVectorByExternalId(id string)(*Vector , error){
 
